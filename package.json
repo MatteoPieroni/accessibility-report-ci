@@ -1,6 +1,7 @@
 {
   "name": "accessibility-report-ci",
   "version": "0.1.0",
+  "repository": "github:MatteoPieroni/accessibility-report-ci",
   "description": "This package creates monthly reports for your CI accessibility tests and can also display them in a nice dashboard",
   "main": "index.js",
   "scripts": {
