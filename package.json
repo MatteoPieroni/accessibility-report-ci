@@ -1,0 +1,17 @@
+{
+  "name": "accessibility-report-ci",
+  "version": "0.1.0",
+  "description": "This package creates monthly reports for your CI accessibility tests and can also display them in a nice dashboard",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matteo Pieroni",
+  "license": "ISC",
+  "dependencies": {
+    "pa11y": "^5.1.0"
+  },
+  "bin": {
+    "acc-generate": "./index.js"
+  }
+}
