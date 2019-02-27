@@ -58,11 +58,12 @@ async function analyseUrls(array) {
         const endTime = new Date();
         var timeDiff = Math.round((endTime - startTime) / 1000);
         console.log('Process completed in ' + timeDiff + ' seconds...');
+        process.exit(0)
     } catch (error) {
         const endTime = new Date();
         var timeDiff = Math.round((endTime - startTime) / 1000);
         console.error('Process errored after ' + timeDiff + ' seconds...')
-        console.error(error.message);
+        throw(error);
     }
 }
 
@@ -73,9 +74,10 @@ fs.readFile('acc-report-config.json', (err, confFile) => {
     try {
         config = JSON.parse(confFile);
         config.defaultOptions = config.defaultOptions || {};
+        config.outputFolder = config.outputFolder || 'accessibility';
+        
         const urlsToTest = utils.splitArrayInParts(config.urls, 10);
         analyseUrls(urlsToTest);
-        process.exit(0)
     } catch(err) {
         throw(err);
     }
