@@ -5,9 +5,6 @@ const utils = require('./lib/utils');
 const files = require('./lib/files');
 const pa11yUtils = require('./lib/pa11y');
 
-const config = require('./acc-report-config.js');
-config.defaultOptions = config.defaultOptions || {};
-
 function readAndEditGeneralReportData (file, newData) {
     return new Promise ((resolve, reject) => {
         fs.readFile(file, (err, data) => {
@@ -61,15 +58,25 @@ async function analyseUrls(array) {
         const endTime = new Date();
         var timeDiff = Math.round((endTime - startTime) / 1000);
         console.log('Process completed in ' + timeDiff + ' seconds...');
-        process.exit(0)
     } catch (error) {
         const endTime = new Date();
         var timeDiff = Math.round((endTime - startTime) / 1000);
         console.error('Process errored after ' + timeDiff + ' seconds...')
         console.error(error.message);
-        process.exit(0)
     }
 }
 
-const urlsToTest = utils.splitArrayInParts(config.urls, 10);
-analyseUrls(urlsToTest);
+fs.readFile('acc-report-config.json', (err, confFile) => {
+    if(err) {
+        throw err;
+    }
+    try {
+        config = JSON.parse(confFile);
+        config.defaultOptions = config.defaultOptions || {};
+        const urlsToTest = utils.splitArrayInParts(config.urls, 10);
+        analyseUrls(urlsToTest);
+        process.exit(0)
+    } catch(err) {
+        throw(err);
+    }
+});
