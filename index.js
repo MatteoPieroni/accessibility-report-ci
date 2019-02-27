@@ -5,7 +5,7 @@ const utils = require('./lib/utils');
 const files = require('./lib/files');
 const pa11yUtils = require('./lib/pa11y');
 
-const config = require('./acc-report-config.js');
+const config = fs.readFile('./acc-report-config.js');
 config.defaultOptions = config.defaultOptions || {};
 
 function readAndEditGeneralReportData (file, newData) {
