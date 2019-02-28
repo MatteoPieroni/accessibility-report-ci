@@ -49,31 +49,31 @@ async function analyseUrls(array) {
     try {
         const date = new Date();
         const resultsToShow = await pa11yUtils.getAllResults(array, config);
-        console.log('Gathering data completed...')
+        utils.successLog('Gathering data completed...')
         const jsonToFile = JSON.stringify(resultsToShow);
         
         if(!files.directoryExists(`${config.outputFolder}`))
-            await files.promiseMkDir(`${config.outputFolder}`, {}, () => console.log('Folder created...'));
+            await files.promiseMkDir(`${config.outputFolder}`, {}, () => utils.successLog('Folder created...'));
 
-        console.log('Writing single read file started...')
-        await files.promiseWriteFile(`${config.outputFolder}/acc-report-${date.getFullYear()}-${date.getMonth() + 1}.json`, jsonToFile, 'utf8', () => console.log('Writing single read file completed...'));
+        utils.regularLog('Writing single read file started...')
+        await files.promiseWriteFile(`${config.outputFolder}/acc-report-${date.getFullYear()}-${date.getMonth() + 1}.json`, jsonToFile, 'utf8', () => utils.successLog('Writing single read file completed...'));
 
         if (outputGeneral) {
             let generalReportJson = JSON.stringify([resultsToShow]);
-            console.log('Writing general report file started...')
+            utils.regularLog('Writing general report file started...')
             if (fs.existsSync(`${config.outputFolder}/acc-general-report.json`))
                 generalReportJson = await readAndEditGeneralReportData(`${config.outputFolder}/acc-general-report.json`, resultsToShow)
-            await files.promiseWriteFile(`${config.outputFolder}/acc-general-report.json`, generalReportJson, 'utf8', () => console.log('Writing general report file completed...'));
+            await files.promiseWriteFile(`${config.outputFolder}/acc-general-report.json`, generalReportJson, 'utf8', () => utils.successLog('Writing general report file completed...'));
         }
 
         const endTime = new Date();
         var timeDiff = Math.round((endTime - startTime) / 1000);
-        console.log('Process completed in ' + timeDiff + ' seconds...');
+        utils.finishLog('Process completed in ' + timeDiff + ' seconds...');
         process.exit(0)
     } catch (error) {
         const endTime = new Date();
         var timeDiff = Math.round((endTime - startTime) / 1000);
-        console.error('Process errored after ' + timeDiff + ' seconds...')
+        utils.errorLog('Process errored after ' + timeDiff + ' seconds...')
         throw(error);
     }
 }
