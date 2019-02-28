@@ -10,7 +10,8 @@
   "author": "Matteo Pieroni",
   "license": "ISC",
   "dependencies": {
-    "pa11y": "^5.1.0"
+    "pa11y": "^5.1.0",
+    "yargs": "^13.2.1"
   },
   "bin": {
     "acc-generate": "./index.js"
