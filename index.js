@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const fs = require('fs');
+const path = require('path');
 const chalk = require('chalk');
 require('draftlog').into(console);
 const argv = require('yargs')
@@ -13,59 +14,16 @@ const argv = require('yargs')
     .argv;
 
 const utils = require('./lib/utils');
-const files = require('./lib/files');
-const pa11yUtils = require('./lib/pa11y');
-const reports = require('./lib/reports');
+const acest = require('./bin/acest');
 
 const outputArchive = (argv.archive) ? true : false;
 const outputVisualizer = (argv.visualizer) ? true : false;
-const configFileToRead = argv.config || 'acc-report-config.json';
+const configFileToRead = argv.config || 'acc-report.config.js';
 
-async function analyseUrls(array) {
-    const startTime = new Date();
+config = require(path.join(__dirname, '/' + configFileToRead));
+config.defaultOptions = config.defaultOptions || {};
+config.threshold = config.threshold || 0;
+config.outputFolder = config.outputFolder || 'accessibility';
 
-    try {
-        const date = new Date();
-        let jsonToFile = '';
-        
-        const resultsToShow = await pa11yUtils.getAllResults(array, config);
-        
-        if (outputArchive || outputVisualizer) {
-            console.log(`All tests completed in ${utils.checkTime(startTime)} seconds...`);
-            jsonToFile = JSON.stringify(resultsToShow);
-            await files.checkAndCreateFolder(`${config.outputFolder}`);
-        }
-
-        if (outputArchive)
-            await reports.writeArchiveFile(`${config.outputFolder}/acc-report-${date.getFullYear()}-${date.getMonth() + 1}.json`, jsonToFile);
-
-        if (outputVisualizer)
-            await reports.writeReportFile(`${config.outputFolder}/acc-general-report.json`, resultsToShow, JSON.stringify([resultsToShow]))
-
-        console.log(`${(outputArchive || outputVisualizer) ? 'Process' : 'All tests'} completed in ${utils.checkTime(startTime)} seconds...`);
-        process.exit(0);
-
-    } catch (error) {
-
-        console.log(chalk.red(`Process errored after ${utils.checkTime(startTime)} seconds...`));
-        throw(error);
-
-    }
-}
-
-fs.readFile(configFileToRead, (err, confFile) => {
-    if(err) {
-        throw err;
-    }
-    try {
-        config = JSON.parse(confFile);
-        config.defaultOptions = config.defaultOptions || {};
-        config.threshold = config.threshold || 0;
-        config.outputFolder = config.outputFolder || 'accessibility';
-
-        const urlsToTest = utils.splitArrayInParts(config.urls, 10);
-        analyseUrls(urlsToTest);
-    } catch(err) {
-        throw(err);
-    }
-});
+const urlsToTest = utils.splitArrayInParts(config.urls, 10);
+acest.analyseUrls(urlsToTest, config, outputArchive, outputVisualizer);
