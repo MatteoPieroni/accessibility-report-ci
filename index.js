@@ -17,8 +17,12 @@ const acest = require('./bin/acest');
 const outputArchive = (argv.archive) ? true : false;
 const outputVisualizer = (argv.visualizer) ? true : false;
 const configFileToRead = argv.config || 'acc-report.config.js';
-
-const config = require(path.join(process.cwd(), '/' + configFileToRead));
+let config = '';
+try {
+    config = require(path.join(process.cwd(), '/' + configFileToRead));
+} catch(err) {
+    return console.log(chalk.red("Config file not found. Add it on the root of your project or use \"acest --config [yourfilename.js]\""));
+}
 config.defaultOptions = config.defaultOptions || {};
 config.threshold = config.threshold || 0;
 config.outputFolder = config.outputFolder || 'accessibility';
