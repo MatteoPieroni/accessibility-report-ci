@@ -1,8 +1,8 @@
 {
-  "name": "accessibility-report-ci",
-  "version": "1.0.0",
+  "name": "acest",
+  "version": "0.1.0",
   "repository": "github:MatteoPieroni/accessibility-report-ci",
-  "description": "This package creates monthly reports for your CI accessibility tests and can also display them in a nice dashboard",
+  "description": "This package can be run on node to test pages for accessibility and create reports. It can also be run on your CI/CD pipeline!",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
