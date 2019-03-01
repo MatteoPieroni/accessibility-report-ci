@@ -11,10 +11,11 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^2.4.2",
+    "draftlog": "^1.0.12",
     "pa11y": "^5.1.0",
     "yargs": "^13.2.1"
   },
   "bin": {
-    "acc-generate": "./index.js"
+    "acest": "./index.js"
   }
 }

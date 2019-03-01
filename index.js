@@ -1,80 +1,55 @@
 #!/usr/bin/env node
 const fs = require('fs');
+const chalk = require('chalk');
+require('draftlog').into(console);
 const argv = require('yargs')
-    .usage('Usage: --general [bool] || --config [fileName]')
+    .usage('Usage:  --config [fileName] || --archive [bool] || --visualizer [bool]')
     .command('acc-generate', 'Generates 2 report files using the given config')
-    .describe('general', 'Set to false to deactivate the general report')
     .describe('config', 'Supply the name of the config file')
+    .describe('archive', 'Outputs the archive file')
+    .alias('archive', 'a')
+    .describe('visualizer', 'Outputs the general report file')
+    .alias('visualizer', 'v')
     .argv;
 
 const utils = require('./lib/utils');
 const files = require('./lib/files');
 const pa11yUtils = require('./lib/pa11y');
+const reports = require('./lib/reports');
 
-const outputGeneral = !argv.general || argv.general == 'true';
+const outputArchive = (argv.archive) ? true : false;
+const outputVisualizer = (argv.visualizer) ? true : false;
 const configFileToRead = argv.config || 'acc-report-config.json';
-
-function readAndEditGeneralReportData (file, newData) {
-    return new Promise ((resolve, reject) => {
-        fs.readFile(file, (err, data) => {
-            if (err) 
-                reject(err);
-            
-            try {
-                const reportFileData = JSON.parse(data);
-                const lastTest = reportFileData[reportFileData.length - 1];
-                const lastTestDate = lastTest[lastTest.length - 1];
-                const currentTestDate = newData[newData.length - 1];
-
-                if (lastTestDate.year === currentTestDate.year &&
-                    lastTestDate.month === currentTestDate.month) {
-                    reportFileData.splice(-1,1);
-                    reportFileData.push(newData)
-                } else {
-                    reportFileData.splice(0, 1);
-                    reportFileData.push(newData);
-                }
-
-                resolve(JSON.stringify(reportFileData));
-            } catch (err) {
-                reject(err);
-            }
-        })
-    })
-}
 
 async function analyseUrls(array) {
     const startTime = new Date();
 
     try {
         const date = new Date();
-        const resultsToShow = await pa11yUtils.getAllResults(array, config);
-        utils.successLog('Gathering data completed...')
-        const jsonToFile = JSON.stringify(resultsToShow);
+        let jsonToFile = '';
         
-        if(!files.directoryExists(`${config.outputFolder}`))
-            await files.promiseMkDir(`${config.outputFolder}`, {}, () => utils.successLog('Folder created...'));
-
-        utils.regularLog('Writing single read file started...')
-        await files.promiseWriteFile(`${config.outputFolder}/acc-report-${date.getFullYear()}-${date.getMonth() + 1}.json`, jsonToFile, 'utf8', () => utils.successLog('Writing single read file completed...'));
-
-        if (outputGeneral) {
-            let generalReportJson = JSON.stringify([resultsToShow]);
-            utils.regularLog('Writing general report file started...')
-            if (fs.existsSync(`${config.outputFolder}/acc-general-report.json`))
-                generalReportJson = await readAndEditGeneralReportData(`${config.outputFolder}/acc-general-report.json`, resultsToShow)
-            await files.promiseWriteFile(`${config.outputFolder}/acc-general-report.json`, generalReportJson, 'utf8', () => utils.successLog('Writing general report file completed...'));
+        const resultsToShow = await pa11yUtils.getAllResults(array, config);
+        
+        if (outputArchive || outputVisualizer) {
+            console.log(`All tests completed in ${utils.checkTime(startTime)} seconds...`);
+            jsonToFile = JSON.stringify(resultsToShow);
+            await files.checkAndCreateFolder(`${config.outputFolder}`);
         }
 
-        const endTime = new Date();
-        var timeDiff = Math.round((endTime - startTime) / 1000);
-        utils.finishLog('Process completed in ' + timeDiff + ' seconds...');
-        process.exit(0)
+        if (outputArchive)
+            await reports.writeArchiveFile(`${config.outputFolder}/acc-report-${date.getFullYear()}-${date.getMonth() + 1}.json`, jsonToFile);
+
+        if (outputVisualizer)
+            await reports.writeReportFile(`${config.outputFolder}/acc-general-report.json`, resultsToShow, JSON.stringify([resultsToShow]))
+
+        console.log(`${(outputArchive || outputVisualizer) ? 'Process' : 'All tests'} completed in ${utils.checkTime(startTime)} seconds...`);
+        process.exit(0);
+
     } catch (error) {
-        const endTime = new Date();
-        var timeDiff = Math.round((endTime - startTime) / 1000);
-        utils.errorLog('Process errored after ' + timeDiff + ' seconds...')
+
+        console.log(chalk.red(`Process errored after ${utils.checkTime(startTime)} seconds...`));
         throw(error);
+
     }
 }
 
@@ -85,6 +60,7 @@ fs.readFile(configFileToRead, (err, confFile) => {
     try {
         config = JSON.parse(confFile);
         config.defaultOptions = config.defaultOptions || {};
+        config.threshold = config.threshold || 0;
         config.outputFolder = config.outputFolder || 'accessibility';
 
         const urlsToTest = utils.splitArrayInParts(config.urls, 10);
