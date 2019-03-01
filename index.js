@@ -1,7 +1,5 @@
 #!/usr/bin/env node
-const fs = require('fs');
 const path = require('path');
-const chalk = require('chalk');
 require('draftlog').into(console);
 const argv = require('yargs')
     .usage('Usage:  --config [fileName] || --archive [bool] || --visualizer [bool]')
@@ -20,7 +18,7 @@ const outputArchive = (argv.archive) ? true : false;
 const outputVisualizer = (argv.visualizer) ? true : false;
 const configFileToRead = argv.config || 'acc-report.config.js';
 
-config = require(path.join(__dirname, '/' + configFileToRead));
+const config = require(path.join(process.cwd(), '/' + configFileToRead));
 config.defaultOptions = config.defaultOptions || {};
 config.threshold = config.threshold || 0;
 config.outputFolder = config.outputFolder || 'accessibility';

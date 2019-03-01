@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const utils = require('../lib/utils');
 const files = require('../lib/files');
 const pa11yUtils = require('../lib/pa11y');
