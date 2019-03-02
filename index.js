@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const path = require('path');
 require('draftlog').into(console);
+const chalk = require('chalk');
 const argv = require('yargs')
     .usage('Usage:  --config [fileName] || --archive [bool] || --visualizer [bool]')
     .command('acc-generate', 'Generates 2 report files using the given config')
