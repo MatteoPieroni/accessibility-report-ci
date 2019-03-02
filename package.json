@@ -1,6 +1,6 @@
 {
   "name": "acest",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": "github:MatteoPieroni/accessibility-report-ci",
   "description": "This package can be run on node to test pages for accessibility and create reports. It can also be run on your CI/CD pipeline!",
   "main": "index.js",
