@@ -20,10 +20,10 @@ const analyseUrls = async (array, config, outputArchive, outputVisualizer) => {
         }
 
         if (outputArchive)
-            await reports.writeArchiveFile(`${config.outputFolder}/acc-report-${date.getFullYear()}-${date.getMonth() + 1}.json`, jsonToFile);
+            await reports.writeArchiveFile(`${config.outputFolder}/acest-report-${date.getFullYear()}-${date.getMonth() + 1}.json`, jsonToFile);
 
         if (outputVisualizer)
-            await reports.writeReportFile(`${config.outputFolder}/acc-general-report.json`, resultsToShow, JSON.stringify([resultsToShow]))
+            await reports.writeReportFile(`${config.outputFolder}/acest-general-report.json`, resultsToShow, JSON.stringify([resultsToShow]))
 
         console.log(`${(outputArchive || outputVisualizer) ? 'Process' : 'All tests'} completed in ${utils.checkTime(startTime)} seconds...`);
         process.exit(0);

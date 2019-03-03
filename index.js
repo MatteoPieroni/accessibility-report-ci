@@ -17,7 +17,7 @@ const acest = require('./bin/acest');
 
 const outputArchive = (argv.archive) ? true : false;
 const outputVisualizer = (argv.visualizer) ? true : false;
-const configFileToRead = argv.config || 'acc-report.config.js';
+const configFileToRead = argv.config || 'acest.config.js';
 let config = '';
 try {
     config = require(path.join(process.cwd(), '/' + configFileToRead));
