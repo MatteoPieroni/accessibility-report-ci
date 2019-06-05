@@ -17,5 +17,8 @@
   },
   "bin": {
     "acest": "./index.js"
+  },
+  "devDependencies": {
+    "mock-fs": "^4.8.0"
   }
 }
